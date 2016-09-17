@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
 
 import lombok.extern.log4j.Log4j;
 
@@ -16,7 +18,10 @@ public class WavFile {
 
 	private RiffHeader riffHeader;
 	private WaveHeader waveHeader;
+	private DataHeader dataHeader;
 
+	private Map<Integer, List<Double>> samplesPerChannel;
+	
 	private WavFile(String file) {
 		this.file = new File(file);
 	}
@@ -31,8 +36,10 @@ public class WavFile {
 				throw new RuntimeException("Unsupported format.");
 			}
 			this.waveHeader = new WaveHeader(data);
-			// this.data = new DataHeader();
-
+			this.dataHeader = new DataHeader(data);
+			
+			// TODO: read samples
+			
 			return true;
 
 		} catch (FileNotFoundException e) {
@@ -66,8 +73,11 @@ public class WavFile {
 		builder.append("\n)");
 		return builder.toString();
 	}
-	
 
+	public List<Double> getSamples(final int channel) {
+		return this.samplesPerChannel.get(channel);
+	}
+	
 	public static void main(String[] args) {
 		WavFile wavFile = WavFile.load("primer.wav");
 		System.out.println(wavFile);

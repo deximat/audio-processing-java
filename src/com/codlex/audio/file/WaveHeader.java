@@ -19,7 +19,7 @@ public class WaveHeader {
 	private final short bitsPerSample;
 	
 	public WaveHeader(final ByteBuffer data) {
-		this.subchunk1Id = readFtmTag(data);
+		this.subchunk1Id = ByteBufferUtils.getString(data, 4);
 		this.subchunk1Size = data.getInt();
 		this.audioFormat = data.getShort();
 		this.numChannels = data.getShort();
@@ -28,15 +28,5 @@ public class WaveHeader {
 		this.blockAlign = data.getShort();
 		this.bitsPerSample = data.getShort();
 	}
-
-	private String readFtmTag(ByteBuffer data) {
-		StringBuilder builder = new StringBuilder();
-		
-		final int size = 4;
-		for (int i = 0; i < size; i++) {
-			builder.append((char) data.get());
-		}
-		
-		return builder.toString();
-	}
+	
 }

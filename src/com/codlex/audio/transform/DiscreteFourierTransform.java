@@ -3,6 +3,8 @@ package com.codlex.audio.transform;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codlex.audio.generator.Wave;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -69,22 +71,16 @@ public class DiscreteFourierTransform {
 	}
 	
 	public static void main(String[] args) {
-		List<Double> list = new ArrayList<>();
-		list.add(0d);
-		list.add(0.707d);
-		list.add(1d);
-		list.add(0.707d);
-		list.add(0d);
-		list.add(-0.707d);
-		list.add(-1d);
-		list.add(-0.707d);
-		
+		List<Double> list = Wave.add(Wave.sine(20, 30, 100), Wave.sine(1, 2, 100));
+	
 		DiscreteFourierTransform transform = new DiscreteFourierTransform(1, list);
 	
 		for (Frequency frequency : transform.getFrequencies()) {
-			if (true || !frequency.isSilence()) {
+			if (!frequency.isSilence()) {
 				System.out.println(frequency);
 			}
 		}
 	}
+	
+
 }

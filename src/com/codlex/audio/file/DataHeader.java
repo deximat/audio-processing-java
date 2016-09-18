@@ -2,9 +2,11 @@ package com.codlex.audio.file;
 
 import java.nio.ByteBuffer;
 
+import lombok.Getter;
 import lombok.ToString;
 
 @ToString
+@Getter
 public class DataHeader {
 
 	private final String subchunk2Id;

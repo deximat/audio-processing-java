@@ -14,4 +14,17 @@ public class ByteBufferUtils {
 		return builder.toString();
 	}
 
+	public static int readVariableInt(ByteBuffer data, int bytes) {
+		switch (bytes) {
+			case 1:
+				return data.get();
+			case 2:
+				return data.getShort();
+			case 4:
+				return data.getInt();
+			default:
+				throw new RuntimeException("Unsupported sample size.");
+		}
+	}
+
 }

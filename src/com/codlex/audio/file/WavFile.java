@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class WavFile {
 			this.waveHeader = new WaveHeader(data);
 			this.dataHeader = new DataHeader(data);
 			
-			// TODO: read samples
+			this.samplesPerChannel = readSamples(data);
 			
 			return true;
 
@@ -51,6 +53,38 @@ public class WavFile {
 		}
 	}
 
+	private Map<Integer, List<Double>> readSamples(ByteBuffer data) {
+		final Map<Integer, List<Double>> samples = new HashMap<>();
+		
+		final int numberOfBlocks = this.dataHeader.getSubchunk2Size() / this.waveHeader.getBlockAlign();
+		final int numberOfChannels = this.waveHeader.getNumChannels();
+		final int bytesPerSample = this.waveHeader.getBitsPerSample() / 8;
+		final double sampleMaxValue = bytesPerSample == 1 ? 255 : 1 << (this.waveHeader.getBitsPerSample() - 1) - 1;
+		for (int block = 0; block < numberOfBlocks; block++) {
+			for (int channel = 0; channel < numberOfChannels; channel++) {
+				// get samples list for channel
+				List<Double> channelSamples = samples.get(channel);
+				if (channelSamples == null) {
+					channelSamples = new ArrayList<>();
+					samples.put(channel, channelSamples);
+				}
+				
+				// calculate real sample value
+				int rawValue = ByteBufferUtils.readVariableInt(data, bytesPerSample);
+				if (bytesPerSample == 1) { // in this case value is unsigned
+					rawValue &= 0xFF; // this will show unsigned value of byte
+				}
+				double realValue = rawValue / sampleMaxValue;
+				
+				// save to channel samples
+				channelSamples.add(realValue);
+			}
+		}
+		
+		return samples;
+	}
+
+	
 	public static final WavFile load(String file) {
 		final WavFile wavFile = new WavFile(file);
 		boolean success = wavFile.load();
@@ -80,6 +114,11 @@ public class WavFile {
 	
 	public static void main(String[] args) {
 		WavFile wavFile = WavFile.load("primer.wav");
+		
+		for (final Double sample : wavFile.getSamples(0)) {
+			System.out.println(sample);
+		}
+		
 		System.out.println(wavFile);
 	}
 }

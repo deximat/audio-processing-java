@@ -27,12 +27,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class AudioGUI extends Application {
 
 	@Override
 	public void start(final Stage stage) throws Exception {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Resource File");
+		fileChooser.showOpenDialog(stage);
 //		final FXMLLoader loader = new FXMLLoader();
 //		loader.setLocation(AudioGUI.class.getResource("MainScene.fxml"));
 //		AnchorPane mainScene = loader.load();

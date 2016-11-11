@@ -134,6 +134,7 @@ public class WavFile {
 	}
 
 	public double getSamplingRate() {
+		// TODO: cheky why this is double
 		return this.waveHeader.getSampleRate();
 	}
 

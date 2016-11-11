@@ -3,31 +3,10 @@ package com.codlex.audio.transform;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codlex.audio.generator.Wave;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.ToString;
 
-public class DiscreteFourierTransform {
-	
-	@Data
-	@AllArgsConstructor
-	private class Frequency {
-		private double frequency;
-		private double amplitude;
-		
-		
-		public boolean isSilence() {
-			final double zeroEpsilon = 1e-5;
-			return Math.abs(this.amplitude) <= zeroEpsilon;
-		}
-		
-		public String toString() {
-			return String.format("Freq:%fHZ, Amplitude: %.5f", this.frequency, this.amplitude);
-		}
-	}
+public class DiscreteFourierTransform implements FourierTransform {
+
 	
 	private final int n;
 	private List<Double> samples;
@@ -54,33 +33,18 @@ public class DiscreteFourierTransform {
 	private Frequency calculateFrequency(final int frequencyIndex) {
 		double frequency = frequencyIndex / (double) this.n;
 		
-		double real = 0;
-		double immaginery = 0;
+		ComplexNumber result = new ComplexNumber(0);
 		
 		for (int k = 0; k < this.n; k++) {
 			double tetha = - k * 2 * Math.PI * frequency;
-			real += this.samples.get(k) * Math.cos(tetha);
-			immaginery += this.samples.get(k) * Math.sin(tetha);
+			ComplexNumber toAdd = new ComplexNumber(this.samples.get(k) * Math.cos(tetha), this.samples.get(k) * Math.sin(tetha));
+			result = result.plus(toAdd);
 		}
 		
-		double amplitude = real*real + immaginery * immaginery;
-		amplitude = Math.sqrt(amplitude);
+		double amplitude = result.abs();
 		amplitude /= this.n / 2;
 		
 		return new Frequency(frequencyIndex / this.windowLengthSeconds, amplitude);
 	}
-	
-	public static void main(String[] args) {
-		List<Double> list = Wave.add(Wave.sine(20, 30, 100), Wave.sine(1, 2, 100));
-	
-		DiscreteFourierTransform transform = new DiscreteFourierTransform(1, list);
-	
-		for (Frequency frequency : transform.getFrequencies()) {
-			if (!frequency.isSilence()) {
-				System.out.println(frequency);
-			}
-		}
-	}
-	
 
 }

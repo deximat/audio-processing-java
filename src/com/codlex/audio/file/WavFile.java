@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.codlex.audio.transform.DiscreteFourierTransform;
+import com.codlex.audio.transform.Frequency;
+
 import lombok.extern.log4j.Log4j;
 
 @Log4j
@@ -113,12 +116,26 @@ public class WavFile {
 	}
 	
 	public static void main(String[] args) {
-		WavFile wavFile = WavFile.load("primer.wav");
+		WavFile wavFile = WavFile.load("primer2.wav");
+//		for (final Double sample : wavFile.getSamples(0)) {
+//			System.out.println(sample);
+//		}
 		
-		for (final Double sample : wavFile.getSamples(0)) {
-			System.out.println(sample);
+		
+		System.out.println(wavFile.getSamples(0).size());
+
+		DiscreteFourierTransform transform = new DiscreteFourierTransform(0.23, wavFile.getSamples(0).subList(0, 10000));
+
+		for (Frequency frequency : transform.getFrequencies()) {
+			if (!frequency.isSilence()) {
+				System.out.println(frequency);
+			}
 		}
-		
-		System.out.println(wavFile);
 	}
+
+	public double getSamplingRate() {
+		return this.waveHeader.getSampleRate();
+	}
+
+
 }

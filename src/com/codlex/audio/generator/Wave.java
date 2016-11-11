@@ -1,7 +1,12 @@
 package com.codlex.audio.generator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.management.relation.RelationServiceNotRegisteredException;
 
 public class Wave {
 	
@@ -30,6 +35,28 @@ public class Wave {
 		}
 		
 		return sum;
+	}
+
+	public static List<Double> parse(String waveExpression) {
+		String[] waves = waveExpression.split("\\+");
+		final Pattern wavePattern = Pattern.compile(" *[W,w]ave\\(([\\-]*[0-9]*) *, *([\\-]*[0-9]*)\\) *");
+		List<Double> sumOfWaves = new ArrayList<Double>();
+		sumOfWaves.addAll(Collections.nCopies(1024, 0.0));
+		
+		for (String wave : waves) {
+			// wave should be of this format: Wave(amplitude, frequency)
+			Matcher matcher = wavePattern.matcher(wave);
+			if (!matcher.find()) {
+				throw new RuntimeException("Wrong format given.");
+			}
+			
+			double amplitude = Double.parseDouble(matcher.group(1));
+			double frequency = Double.parseDouble(matcher.group(2));
+			
+			sumOfWaves = add(sumOfWaves, Wave.sine(amplitude, frequency, 1024));
+			
+		}
+		return sumOfWaves;
 	}
 	
 	

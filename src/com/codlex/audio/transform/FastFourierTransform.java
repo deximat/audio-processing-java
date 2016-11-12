@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
 import com.codlex.audio.util.Bits;
 
 public class FastFourierTransform implements FourierTransform {
@@ -19,16 +21,20 @@ public class FastFourierTransform implements FourierTransform {
 		return this.frequencies;
 	}
 
-	public FastFourierTransform(final double windowLengthSeconds, final List<Double> windowToTransform) {
-		this.windowLengthSeconds = windowLengthSeconds;
-		this.n = windowToTransform.size();
+	public FastFourierTransform(final double sampleDuration, final List<Double> windowToTransform) {		
+		this.samples = new ArrayList<>(windowToTransform);
 		
-		if (!Bits.isPowerOfTwo(this.n)) {
-			// TODO: check if we can just fill it in with zeros, it should work
-			throw new RuntimeException("Size of sampling array must be power of two.");
+		if (!Bits.isPowerOfTwo(this.samples.size())) {
+			int numberOfZerosNeeded = Bits.nextPowerOfTwo(this.samples.size()) - this.samples.size();
+			System.out.println("zero: " + numberOfZerosNeeded);
+			System.out.println(Bits.nextPowerOfTwo(this.samples.size()));
+			System.out.println(this.samples.size());
+			
+			this.samples.addAll(Collections.nCopies(numberOfZerosNeeded, 0.0));
 		}
 		
-		this.samples = windowToTransform;
+		this.n = this.samples.size();
+		this.windowLengthSeconds = sampleDuration * this.n;
 		
 		this.frequencies = calculateFrequencies();
 		

@@ -1,8 +1,10 @@
 package com.codlex.audio.view;
 
 
+import java.io.InputStream;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.codlex.audio.file.WavFile;
 import com.codlex.audio.generator.Wave;
@@ -16,15 +18,12 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import lombok.installer.WindowsDriveInfo;
 import javafx.stage.Stage;
 
 public class SignalProcessingGUI extends Application {
@@ -61,6 +60,12 @@ public class SignalProcessingGUI extends Application {
 		VBox vbox = (VBox) this.stage.getScene().getRoot();
 		vbox.getChildren().set(0, buildFrequencyChart());
 		vbox.getChildren().set(2, buildTimeChart());
+	}
+	
+	private void redrawWindowChooser() {
+		VBox vbox = (VBox) this.stage.getScene().getRoot();
+		HBox processingControlls = (HBox) vbox.getChildren().get(1);
+		processingControlls.getChildren().set(3, buildWindowChooser());
 	}
 	
 	private Node buildFileControls() {
@@ -107,6 +112,8 @@ public class SignalProcessingGUI extends Application {
 		List<Node> containerChildren = container.getChildren();
 		containerChildren.add(buildWindowFunctionChooser());
 		containerChildren.add(buildWindowSizeInput());
+		containerChildren.add(buildAmplitudeFilter());
+		containerChildren.add(buildWindowChooser());
 		containerChildren.add(createButton("Process", 100, () -> {
 			redrawCharts();
 		}));
@@ -115,20 +122,51 @@ public class SignalProcessingGUI extends Application {
 		return container;
 	}
 
+	private Node buildAmplitudeFilter() {
+		TextField input = new TextField();
+		input.setText("0");
+		// filter out anything that is not number
+		input.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.isEmpty()) {
+				newValue = "0";
+			}
+	        if (!newValue.matches("\\d*|(\\.)*")) {
+	        	String newValidValue = newValue.replaceAll("[^\\d|\\.]", "");
+	        	input.setText(newValidValue);
+	        	this.model.setAmplitudeFilter(Double.parseDouble(newValidValue));
+	        } else {
+	        	this.model.setAmplitudeFilter(Double.parseDouble(newValue));
+	        }
+    		
+	    });
+		return input;
+	}
+
+	private Node buildWindowChooser() {
+		List<Integer> numbersSet = IntStream.rangeClosed(1, this.model.getNumberOfWindows()).boxed().collect(Collectors.toList());
+		ChoiceBox<Integer> windowNumbers = new ChoiceBox<>(FXCollections.observableArrayList(numbersSet));
+		windowNumbers.getSelectionModel().selectFirst();
+		windowNumbers.getSelectionModel().selectedItemProperty().addListener((object, oldValue, newValue) -> {
+			this.model.setActiveWindow(newValue);
+		});
+		return windowNumbers;
+	}
+
 	private Node buildWindowSizeInput() {
 		TextField input = new TextField();
+		input.setText("1024");
 		// filter out anything that is not number
 		input.textProperty().addListener((observable, oldValue, newValue) -> {
 	        if (!newValue.matches("\\d*")) {
 	        	String newValidValue = newValue.replaceAll("[^\\d]", "");
 	        	input.setText(newValidValue);
-	        	if (!newValidValue.equals(oldValue)) {
-	        		// update model if new value is present
-	        		this.model.setWindowSize(Integer.parseInt(newValidValue));
-	        	}
+	        	this.model.setWindowSize(Integer.parseInt(newValidValue));
+	        } else {
+	        	this.model.setWindowSize(Integer.parseInt(newValue));
 	        }
+    		
+    		redrawWindowChooser();
 	    });
-		input.setText("1024");
 		return input;
 	}
 
@@ -146,7 +184,7 @@ public class SignalProcessingGUI extends Application {
 	}
 
 	private Node buildFrequencyChart() {
-		return Charts.lineFrequency(this.model.calculateFrequencyDomain());
+		return Charts.lineFrequency(this.model.calculateFrequencyDomain(), this.model.getAmplitudeFilter());
 	}
 
 	public static void main(String[] args) {

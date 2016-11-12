@@ -18,7 +18,7 @@ public class Window {
 	}
 	
 	public List<Frequency> doFFT() {
-		final FastFourierTransform transform = new FastFourierTransform(this.length, this.samples);
+		final FastFourierTransform transform = new FastFourierTransform(1.0/1024, this.samples);
 		return transform.getFrequencies();
 	}
 	

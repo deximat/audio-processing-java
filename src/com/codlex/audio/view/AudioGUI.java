@@ -51,7 +51,7 @@ public class AudioGUI extends Application {
         List<Frequency> ffs = new FastFourierTransform(0.74, signal).getFrequencies();
         
         LineChart chart = Charts.line(signal);
-        LineChart chart2 = Charts.lineFrequency(ffs);
+        LineChart chart2 = Charts.lineFrequency(ffs, 0.0);
 
 		VBox box = new VBox(10);
 		HBox inputBox = new HBox(5);
@@ -66,10 +66,10 @@ public class AudioGUI extends Application {
 		    new EventHandler<MouseEvent>() {
 		        @Override public void handle(MouseEvent e) {
 					List<Double> signal = Wave.parse(input.getText());
-			        List<Frequency> ffs = new FastFourierTransform(1.0, signal).getFrequencies();
+			        List<Frequency> ffs = new FastFourierTransform(1.0/1024, signal).getFrequencies();
 
 					box.getChildren().set(1, Charts.line(signal));
-					box.getChildren().set(2, Charts.lineFrequency(ffs));
+					box.getChildren().set(2, Charts.lineFrequency(ffs, 0));
 		        }
 		});
 		

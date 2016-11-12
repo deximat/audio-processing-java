@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.codlex.audio.transform.Frequency;
 
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -15,13 +16,9 @@ public class Charts {
         
         XYChart.Series series = new XYChart.Series();
         
-		int i = 0;
-		for (Double sample : signal) {
+		for (int i = 0; i < signal.size(); i += signal.size() / 1000) {
+			Double sample = signal.get(i);
 			series.getData().add(new XYChart.Data(i, sample));
-			if (i > 1000) {
-				break;
-			}
-			i++;
 		}
         lineChart.getData().add(series);
 
@@ -29,21 +26,26 @@ public class Charts {
 	}
 	
 	
-	public static final LineChart lineFrequency(List<Frequency> signal) {
+	public static final LineChart lineFrequency(List<Frequency> signal, double amplitudeFilter) {
         final LineChart<Number,Number> lineChart = 
                 new LineChart<Number,Number>(new NumberAxis(), new NumberAxis());
-        
+
         XYChart.Series series = new XYChart.Series();
         
-		int i = 0;
+        System.out.println("size : " + signal.size());
 		for (Frequency sample : signal) {
-			if (i > 1000) {
-				break;
+			
+			if (sample.getFrequency() < 0.0001) {
+				continue;
 			}
-			series.getData().add(new XYChart.Data(sample.getFrequency(), sample.getAmplitude()));
-			i++;
+			
+			if (sample.getAmplitude() > amplitudeFilter) {
+				series.getData().add(new XYChart.Data(sample.getFrequency(), sample.getAmplitude()));
+			}
+			
 		}
         lineChart.getData().add(series);
+
 
 		return lineChart;
 	}

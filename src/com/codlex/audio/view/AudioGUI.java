@@ -50,7 +50,7 @@ public class AudioGUI extends Application {
         List<Double> signal = file.getSamples(0).subList(5000, 5000 + (1 << 15));
         List<Frequency> ffs = new FastFourierTransform(0.74, signal).getFrequencies();
         
-        LineChart chart = Charts.line(signal);
+        LineChart chart = Charts.line(signal, 0);
         LineChart chart2 = Charts.lineFrequency(ffs, 0.0);
 
 		VBox box = new VBox(10);

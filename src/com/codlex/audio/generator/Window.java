@@ -10,11 +10,9 @@ import com.codlex.audio.transform.Frequency;
 public class Window {
 
 	private final List<Double> samples;
-	private final double length;
 	
-	private Window(List<Double> samples, double length) {
+	private Window(List<Double> samples) {
 		this.samples = samples;
-		this.length = length;
 	}
 	
 	public List<Frequency> doFFT() {
@@ -22,13 +20,31 @@ public class Window {
 		return transform.getFrequencies();
 	}
 	
-	public static List<Window> generate(final List<Double> samples, int size, int overlap, double length) {
+	public static List<Window> generate(final List<Double> samples, int size) {
 		final List<Window> windows = new ArrayList<>();
 		
-		for (int start = 0; start + size <= samples.size(); start += overlap) { 
-			windows.add(new Window(samples.subList(start, start + size), length));
+		for (int start = 0; start + size <= samples.size(); start += size) { 
+			windows.add(new Window(samples.subList(start, start + size)));
 		}
 		
 		return windows;
+	}
+	
+	public double getAverageEnergy() {
+		return this.samples.stream().mapToDouble(Math::abs).average().getAsDouble();
+	}
+	
+	public int calculateZCR() {
+		int counter = 0;
+		boolean lastIsPositive = this.samples.isEmpty() ? this.samples.get(0) > 0 : false;
+		for (Double sample : samples) {
+			if (lastIsPositive && sample <= 0
+					|| !lastIsPositive && sample > 0) {
+				counter++;
+			}
+			lastIsPositive = sample > 0;
+		}
+		return counter;
+		
 	}
 }

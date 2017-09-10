@@ -6,9 +6,12 @@ import java.util.List;
 import com.codlex.audio.transform.FastFourierTransform;
 import com.codlex.audio.transform.Frequency;
 
+import lombok.Getter;
+
 
 public class Window {
 
+	@Getter
 	private final List<Double> samples;
 	
 	private Window(List<Double> samples) {
@@ -46,5 +49,15 @@ public class Window {
 		}
 		return counter;
 		
+	}
+
+	public static Window empty(int size) {
+		List<Double> samples = new ArrayList<>();
+		
+		for (int i = 0; i < size; i++) {
+			samples.add(0.0);
+		}
+		
+		return new Window(samples);
 	}
 }

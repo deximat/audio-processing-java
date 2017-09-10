@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.codlex.audio.enpointing.Word;
 import com.codlex.audio.enpointing.WordDetection;
 import com.codlex.audio.file.WavFile;
+import com.codlex.audio.projekat.AudioConstants;
 import com.codlex.audio.transform.FastFourierTransform;
 import com.codlex.audio.transform.Frequency;
 import com.codlex.audio.windowing.WindowFunction;
@@ -16,7 +17,7 @@ import com.codlex.audio.windowing.WindowFunction;
 import lombok.Getter;
 
 public class Model {
-	
+
 	private List<Double> signal;
 	@Getter
 	private double sampleDuration;
@@ -32,19 +33,21 @@ public class Model {
 
 	public Model() {
 	}
-	
+
 	public void init(WavFile file) {
 		this.signal = file.getSamples(0);
 		this.sampleDuration = 1 / file.getSamplingRate();
-		this.activeWindow = 1;
+		this.activeWindow = 0;
 		setWindowSize(10);
 		setAmplitudeFilter(0);
-		Word wholeSingnal = new Word(this.sampleDuration, 0, this.signal.size()) {
+		// TODO: be careful I put null for windows
+		Word wholeSingnal = new Word(this.sampleDuration, 0, this.signal.size(), new ArrayList<>(), null) {
 			@Override
 			public String toString() {
 				return "Whole signal";
 			}
-			
+
+			@Override
 			public boolean isWholeSignal() {
 				return true;
 			}
@@ -52,38 +55,41 @@ public class Model {
 		this.activeWord = wholeSingnal;
 		this.words.clear();
 		this.words.add(wholeSingnal);
-		this.words.addAll(new WordDetection(getSignal(), getSampleDuration(), 10, 1000).getWords());
+		this.words.addAll(new WordDetection(getSignal(), getSampleDuration(), AudioConstants.windowDurationMs,
+				AudioConstants.silenceDurationMs, null).getWords());
 		for (Word word : words) {
 			System.out.println("word: " + word);
 		}
 	}
-	
+
 	public List<Frequency> calculateFrequencyDomain() {
 		int activeWindow = this.activeWindow - 1;
 		if (activeWindow == -1) {
 			// should work since frequencies are gathered by same division
 			Map<Double, Double> freqAmplitude = new HashMap<>();
-			
+
 			for (int i = 0; i < calculateNumberOfWindows(); i++) {
-				List<Frequency> frequencies = new FastFourierTransform(this.sampleDuration, this.windowFunction.apply(getWindowSignal(i))).getFrequencies();
+				List<Frequency> frequencies = new FastFourierTransform(this.sampleDuration,
+						this.windowFunction.apply(getWindowSignal(i))).getFrequencies();
 				for (Frequency frequency : frequencies) {
 					Double oldAmp = freqAmplitude.get(frequency.getFrequency());
 					if (oldAmp == null) {
 						oldAmp = 0.0;
 					}
-					freqAmplitude.put(frequency.getFrequency(), oldAmp + frequency.getAmplitude()); 
+					freqAmplitude.put(frequency.getFrequency(), oldAmp + frequency.getAmplitude());
 				}
 			}
-			
+
 			List<Frequency> frequencies = new ArrayList<>();
 			for (Entry<Double, Double> entry : freqAmplitude.entrySet()) {
 				frequencies.add(new Frequency(entry.getKey(), entry.getValue() / calculateNumberOfWindows()));
 			}
-			
+
 			return frequencies;
 		}
-		
-		return new FastFourierTransform(this.sampleDuration, this.windowFunction.apply(getActiveWindowSignal())).getFrequencies();
+
+		return new FastFourierTransform(this.sampleDuration, this.windowFunction.apply(getActiveWindowSignal()))
+				.getFrequencies();
 
 	}
 
@@ -115,25 +121,26 @@ public class Model {
 	public void setActiveWindow(int activeWindow) {
 		this.activeWindow = activeWindow;
 	}
-	
+
 	private List<Double> getActiveWindowSignal() {
 		int window = this.activeWindow;
 		// turn to zero based
 		window--;
 		return getWindowSignal(window);
 	}
-	
+
 	private List<Double> getWindowSignal(int windowZeroBased) {
+		List<Double> signal = getSignal();
 		int fromIndex = this.windowSize * windowZeroBased;
-		int toIndex = Math.min(fromIndex + this.windowSize, this.signal.size());
-		List<Double> windowSignal = this.signal.subList(fromIndex, toIndex);
+		int toIndex = Math.min(fromIndex + this.windowSize, signal.size());
+		List<Double> windowSignal = signal.subList(fromIndex, toIndex);
 		return windowSignal;
 	}
 
 	public double getAmplitudeFilter() {
 		return this.amplitudeFilter;
 	}
-	
+
 	public void setAmplitudeFilter(double newValue) {
 		this.amplitudeFilter = newValue;
 	}

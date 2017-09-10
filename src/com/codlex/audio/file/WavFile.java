@@ -97,6 +97,7 @@ public class WavFile {
 		return wavFile;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("WaveFile(file=");
@@ -138,5 +139,7 @@ public class WavFile {
 		return this.waveHeader.getSampleRate();
 	}
 
-
+	public double getSampleDuration() {
+		return 1 / getSamplingRate();
+	}
 }

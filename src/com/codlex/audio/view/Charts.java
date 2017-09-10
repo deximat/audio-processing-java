@@ -2,8 +2,6 @@ package com.codlex.audio.view;
 
 import java.util.List;
 
-import javax.sound.sampled.Clip;
-
 import com.codlex.audio.enpointing.Word;
 import com.codlex.audio.transform.Frequency;
 import javafx.scene.chart.LineChart;

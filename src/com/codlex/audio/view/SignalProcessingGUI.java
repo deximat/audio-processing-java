@@ -1,15 +1,12 @@
 package com.codlex.audio.view;
 
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.codlex.audio.enpointing.Word;
-import com.codlex.audio.enpointing.WordDetection;
 import com.codlex.audio.file.WavFile;
-import com.codlex.audio.generator.Wave;
 import com.codlex.audio.windowing.WindowFunction;
 import com.google.common.collect.Lists;
 
@@ -19,8 +16,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.LineChartBuilder;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -50,7 +45,7 @@ public class SignalProcessingGUI extends Application {
 		this.stage = stage;
         stage.setTitle("Signal Processing App");
         this.model = new Model();
-        this.model.init(WavFile.load("t1-7.wav"));
+        this.model.init(WavFile.load("t1-4.wav"));
         redrawEverything();
         stage.show();
 	}

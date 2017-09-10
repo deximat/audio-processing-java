@@ -17,6 +17,7 @@ public class Frequency {
 		return Math.abs(this.amplitude) <= zeroEpsilon;
 	}
 
+	@Override
 	public String toString() {
 		return String.format("Freq:%fHZ, Amplitude: %.5f", this.frequency,
 				this.amplitude);

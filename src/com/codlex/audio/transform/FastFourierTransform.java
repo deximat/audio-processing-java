@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-
 import com.codlex.audio.util.Bits;
 
 public class FastFourierTransform implements FourierTransform {

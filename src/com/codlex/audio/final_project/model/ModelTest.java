@@ -2,9 +2,6 @@ package com.codlex.audio.final_project.model;
 
 import java.util.Scanner;
 
-import com.codlex.audio.enpointing.Word;
-import com.codlex.audio.projekat.JavaSoundRecorder;
-
 public class ModelTest {
 	
 	private static final MainModel model = new MainModel();
@@ -47,8 +44,12 @@ public class ModelTest {
 			System.out.println("Choose command: ");
 			System.out.println("newdict - creates new dictionary");
 			System.out.println("rmdict - creates new test suite");
+			System.out.println("selectdict - selects dictionary to specific options");
+			
 			System.out.println("newtest - creates new test suite");
-			System.out.println("selectdict - creates new test suite");
+			System.out.println("rmtest - removes existing test suite");
+			System.out.println("selecttest - selects tests for specific options");
+			
 			System.out.println("ls - prints whole libarry");
 			
 			String command = in.next();
@@ -69,10 +70,54 @@ public class ModelTest {
 				processDictionaryCommans(in, in.next());
 				break;
 			case "newtest":
+				System.out.println("Enter test name:");
+				TestModel test = model.newTest(in.next());
+				System.out.println(test + " created.");
+				break;
+			case "rmtest":
+				System.out.println("Enter test name:");
+				TestModel rmTest = model.removeTest(in.next());
+				System.out.println(rmTest + " removed.");
+				break;
+			case "selecttest":
+				System.out.println("Enter test name:");
+				processTestCommands(in, in.next());
 				break;
 			case "ls":
 				printLibrary();
 				break;
+			}
+		}
+	}
+
+	private static void processTestCommands(Scanner in, String name) {
+		final TestModel test = model.findTestByName(name);
+		System.out.println("Selected " + test);
+		printTest(test);
+		while (true) {
+			System.out.println("newsample - adds sample to test");
+			System.out.println("rmsample - removes sample from test");
+			System.out.println("ls - prints test");
+			System.out.println("exit - returns to library");
+			
+			String command = in.next();
+			
+			switch (command) {
+			case "newsample":
+				System.out.println("Enter word and description of test:");
+				test.newSample(in.next(), in.next());
+				System.out.println("Sample added to " + test);
+				break;
+			case "rmsample":
+				System.out.println("Enter word and description of test:");
+				test.removeSample(in.next(), in.next());
+				System.out.println("Removed from " + test);
+				break;
+			case "ls":
+				printTest(test);
+				break;
+			case "exit":
+				return;
 			}
 		}
 	}
@@ -165,6 +210,16 @@ public class ModelTest {
 		}
 		for (WordModel word : dictionary.getWords()) {
 			System.out.println(word);
+		}
+		System.out.println();
+	}
+	
+	private static void printTest(TestModel test) {
+		if (test.getSamples().isEmpty()) {
+			System.out.println("No samples in this test.");
+		}
+		for (TestSampleModel sample : test.getSamples()) {
+			System.out.println(sample);
 		}
 		System.out.println();
 	}

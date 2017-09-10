@@ -59,7 +59,7 @@ public class DictionaryModel {
 		return this.location.getName();
 	}
 	
-	public void remove() {
+	public void delete() {
 		try {
 			FileUtils.deleteDirectory(this.location);
 		} catch (IOException e) {

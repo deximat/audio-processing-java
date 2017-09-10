@@ -1,6 +1,9 @@
 package com.codlex.audio.final_project.model;
 
+import java.io.File;
 import java.util.Scanner;
+
+import lombok.javac.FindTypeVarScanner;
 
 public class ModelTest {
 	
@@ -67,7 +70,7 @@ public class ModelTest {
 				break;
 			case "selectdict":
 				System.out.println("Enter dicitonary name:");
-				processDictionaryCommans(in, in.next());
+				processDictionaryCommands(in, in.next());
 				break;
 			case "newtest":
 				System.out.println("Enter test name:");
@@ -98,6 +101,7 @@ public class ModelTest {
 			System.out.println("newsample - adds sample to test");
 			System.out.println("rmsample - removes sample from test");
 			System.out.println("ls - prints test");
+			System.out.println("run - runs all tests");
 			System.out.println("exit - returns to library");
 			
 			String command = in.next();
@@ -116,13 +120,26 @@ public class ModelTest {
 			case "ls":
 				printTest(test);
 				break;
+			case "run":
+				System.out.println("Enter dictionary name: ");
+				System.out.println("Running tests... ");
+				DictionaryModel dictionary = model.findDictionaryByName(in.next());
+				
+				for (TestSampleModel sample : test.getSamples()) {
+					String expected = sample.getExpectedWord();
+					QueryResult result = dictionary.query(sample);
+					boolean success = expected.equals(result.getWord().getName());
+					
+					System.out.println();
+				}
+				break;
 			case "exit":
 				return;
 			}
 		}
 	}
 
-	private static void processDictionaryCommans(Scanner in, String name) {
+	private static void processDictionaryCommands(Scanner in, String name) {
 		final DictionaryModel dictionary = model.findDictionaryByName(name);
 		System.out.println("Selected " + dictionary);
 		printDictionary(dictionary);
@@ -154,6 +171,11 @@ public class ModelTest {
 			case "ls":
 				printDictionary(dictionary);
 				break;
+			case "test":
+				TestSampleModel sample = TestModel.newSample();
+				QueryResult result = dictionary.query(sample);
+				System.out.println("Result of test: " + result);
+				break;
 			case "exit":
 				return;
 			}
@@ -171,7 +193,8 @@ public class ModelTest {
 			System.out.println("rmsample - removes sample from word");
 			System.out.println("ls - prints word");
 			System.out.println("exit - returns to dictionary");
-			
+			System.out.println("test - records new sample and test it to this word");
+
 			String command = in.next();
 			
 			switch (command) {
@@ -187,6 +210,11 @@ public class ModelTest {
 				break;
 			case "ls":
 				printWord(word);
+				break;
+			case "test":
+				TestSampleModel sample = TestModel.newSample();
+				QueryResult result = word.query(sample);
+				System.out.println("Result of test: " + result);
 				break;
 			case "exit":
 				return;

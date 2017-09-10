@@ -92,5 +92,10 @@ public class WordModel {
 		sample.delete();
 	}
 
+	
+	public QueryResult query(TestSampleModel sample) {
+		// TODO: do actual query
+		return new QueryResult(this, Math.random());
+	}
 
 }

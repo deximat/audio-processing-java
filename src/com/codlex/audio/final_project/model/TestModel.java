@@ -13,6 +13,8 @@ import lombok.Getter;
 
 public class TestModel {
 	
+	private static final File TMP_TEST = new File("data/");
+	
 	@Getter
 	private List<TestSampleModel> samples = new ArrayList<>();
 	
@@ -60,19 +62,23 @@ public class TestModel {
 	}
 	
 	
-	private String makeName(String name, String description) {
+	private static String makeName(String name, String description) {
 		return name + "-" + description + ".wav";
 	}
 	
-	public void newSample(String name, String description) {
-		name = makeName(name, description);
-		if (findSampleIndexByName(name) != -1) {
-			throw new RuntimeException("Can't have two samples with same name.");
-		}
-		
-		final File file = new File(this.location, name);
+	public static TestSampleModel newSample() {
+		return newSample(TMP_TEST, "TMP", "TMP");
+	}
+	
+	private static TestSampleModel newSample(final File location, String word, String description) {
+		final String name = makeName(word, description);
+		final File file = new File(location, name);
 		JavaSoundRecorder.recordSample(file.getAbsolutePath());
-		this.samples.add(new TestSampleModel(file));
+		return new TestSampleModel(file);
+	} 
+	
+	public void newSample(String name, String description) {
+		this.samples.add(newSample(this.location, name, description));
 	}
 
 	public void removeSample(String name, String description) {

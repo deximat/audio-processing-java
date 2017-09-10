@@ -10,6 +10,8 @@ public class TestSampleModel {
 	
 	private static final int WORD_INDEX = 0;
 	private static final int DESCRIPITON_INDEX = 1;
+	private static final int TEST_TYPE_INDEX = 2;
+	private static final String POSITIVE_TEST = "p";
 	
 	private File location;
 	
@@ -38,6 +40,10 @@ public class TestSampleModel {
 
 	public String getName() {
 		return this.location.getName();
+	}
+	
+	public boolean shouldFind() {
+		return this.location.getName().split("-|\\.")[TEST_TYPE_INDEX].equals(POSITIVE_TEST);
 	}
 
 }

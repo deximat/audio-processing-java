@@ -45,7 +45,7 @@ public class SignalProcessingGUI extends Application {
 		this.stage = stage;
         stage.setTitle("Signal Processing App");
         this.model = new Model();
-        this.model.init(WavFile.load("t1-4.wav"));
+        this.model.init(WavFile.load("primer.wav"));
         redrawEverything();
         stage.show();
 	}
@@ -225,7 +225,7 @@ public class SignalProcessingGUI extends Application {
 	}
 
 	private Node buildFrequencyChart() {
-		return Charts.lineFrequency(this.model.calculateFrequencyDomain(), this.model.getAmplitudeFilter());
+		return Charts.barFrequency(this.model.calculateFrequencyDomain(), this.model.getAmplitudeFilter(), 0, 10000);
 	}
 
 	public static void main(String[] args) {

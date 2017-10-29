@@ -14,7 +14,7 @@ public class FourierTransformTest {
 
 		for (Frequency frequency : transform.getFrequencies()) {
 			if (!frequency.isSilence()) {
-				System.out.println(frequency);
+				// System.out.println(frequency);
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.codlex.audio.enpointing.Word;
 import com.codlex.audio.enpointing.WordDetection;
@@ -13,6 +14,7 @@ import com.codlex.audio.projekat.AudioConstants;
 import com.codlex.audio.transform.FastFourierTransform;
 import com.codlex.audio.transform.Frequency;
 import com.codlex.audio.windowing.WindowFunction;
+import com.google.common.primitives.Doubles;
 
 import lombok.Getter;
 
@@ -24,6 +26,10 @@ public class Model {
 	private WindowFunction windowFunction = WindowFunction.None;
 	@Getter
 	private int windowSize = 1024;
+	@Getter
+	private int windowSizeMs;
+	
+	@Getter
 	private int activeWindow = 1;
 	private double amplitudeFilter;
 	@Getter
@@ -33,6 +39,7 @@ public class Model {
 
 	public Model() {
 	}
+	
 
 	public void init(WavFile file) {
 		this.signal = file.getSamples(0);
@@ -55,13 +62,27 @@ public class Model {
 		this.activeWord = wholeSingnal;
 		this.words.clear();
 		this.words.add(wholeSingnal);
-		this.words.addAll(new WordDetection(getSignal(), getSampleDuration(), AudioConstants.windowDurationMs,
-				AudioConstants.silenceDurationMs, null).getWords());
+//		this.words.addAll(new WordDetection(getSignal(), this.sampleDuration, AudioConstants.windowDurationMs,
+//				AudioConstants.silenceDurationMs, null).getWords());
 		for (Word word : words) {
 			System.out.println("word: " + word);
 		}
 	}
 
+	public List<List<Frequency>> calculateFullFrequencyDomain() {
+		List<List<Frequency>> whole = new ArrayList<>();
+		for (int i = 0; i < calculateNumberOfWindows(); i++) {
+			whole.add(calculateFrequencyDomainForWindow(i));
+		}
+		return whole;
+	}
+	
+	public List<Frequency> calculateFrequencyDomainForWindow(int windowIndex) {
+		return new FastFourierTransform(this.sampleDuration, this.windowFunction.apply(getWindowSignal(windowIndex)))
+		.getFrequencies();
+	}
+	
+	
 	public List<Frequency> calculateFrequencyDomain() {
 		int activeWindow = this.activeWindow - 1;
 		if (activeWindow == -1) {
@@ -81,15 +102,14 @@ public class Model {
 			}
 
 			List<Frequency> frequencies = new ArrayList<>();
-			for (Entry<Double, Double> entry : freqAmplitude.entrySet()) {
+			for (Entry<Double, Double> entry : freqAmplitude.entrySet().stream().sorted((c1, c2) -> Doubles.compare(c1.getKey(), c2.getKey())).collect(Collectors.toList())) {
 				frequencies.add(new Frequency(entry.getKey(), entry.getValue() / calculateNumberOfWindows()));
 			}
 
 			return frequencies;
 		}
 
-		return new FastFourierTransform(this.sampleDuration, this.windowFunction.apply(getActiveWindowSignal()))
-				.getFrequencies();
+		return calculateFrequencyDomainForWindow(activeWindow);
 
 	}
 
@@ -106,6 +126,7 @@ public class Model {
 	}
 
 	public void setWindowSize(final int windowSizeMS) {
+		this.windowSizeMs = windowSizeMS;
 		this.windowSize = (int) (windowSizeMS / 1000.0 / this.sampleDuration);
 
 	}
@@ -145,11 +166,20 @@ public class Model {
 		this.amplitudeFilter = newValue;
 	}
 
+
 	public int getActiveWindowIndex() {
 		return (this.activeWindow - 1) * this.windowSize;
 	}
 
 	public void setActiveWord(Word word) {
 		this.activeWord = word;
+	}
+
+	public int getDuration() {
+		return (int) (getSampleDuration() * getSignal().size() * 1000);
+	}
+	
+	public double getMaxFrequency() {
+		return calculateFrequencyDomain().stream().mapToDouble(Frequency::getFrequency).max().getAsDouble();
 	}
 }

@@ -24,9 +24,9 @@ public class FastFourierTransform implements FourierTransform {
 		
 		if (!Bits.isPowerOfTwo(this.samples.size())) {
 			int numberOfZerosNeeded = Bits.nextPowerOfTwo(this.samples.size()) - this.samples.size();
-			System.out.println("zero: " + numberOfZerosNeeded);
-			System.out.println(Bits.nextPowerOfTwo(this.samples.size()));
-			System.out.println(this.samples.size());
+//			System.out.println("zero: " + numberOfZerosNeeded);
+//			System.out.println(Bits.nextPowerOfTwo(this.samples.size()));
+//			System.out.println(this.samples.size());
 			
 			this.samples.addAll(Collections.nCopies(numberOfZerosNeeded, 0.0));
 		}

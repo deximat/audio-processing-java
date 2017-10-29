@@ -10,28 +10,41 @@ public class Wave {
 	
 	
 	
+	
+	
 	public static List<Double> sine(double amplitude, double freq, int length) {
+		return sine(amplitude, freq, length, 0);
+	}
+
+	public static List<Double> sine(double amplitude, double freq, int length, int incrementFreq) {
 		List<Double> result = new ArrayList<>();
 		
 		double period = 2 * Math.PI;
 		for (int i = 0; i < length; i++) {
-			result.add(amplitude * Math.sin(period * i / (length / freq)));
+			result.add(amplitude * Math.sin(period * i / (length / (freq + incrementFreq * i ))));
 		}
 		
 		return result;
 	}
 	
 	public static List<Double> add(List<Double> wave1, List<Double> wave2) {
-		if (wave1.size() != wave2.size()) {
-			throw new RuntimeException("Cannot add two waves of different sizes.");
-		}
-		
 		List<Double> sum = new ArrayList<>();
-		
-		for (int i = 0; i < wave1.size(); i++) {
-			sum.add(wave1.get(i) + wave2.get(i));
+		for (int i = 0; i < Math.max(wave1.size(), wave2.size()); i++) {
+			double wave1Value = i < wave1.size() ? wave1.get(i) : 0;
+			double wave2Value = i < wave2.size() ? wave2.get(i) : 0;
+			sum.add(wave1Value + wave2Value);
 		}
-		
+		return sum;
+	}
+	
+	public static List<Double> shr(List<Double> wave, int move) {
+		List<Double> sum = new ArrayList<>();
+		for (int i = 0; i < move; i++) {
+			sum.add(0.0);
+		}
+		for (int i = 0; i < wave.size(); i++) {
+			sum.add(wave.get(i));
+		}
 		return sum;
 	}
 
@@ -55,6 +68,11 @@ public class Wave {
 			
 		}
 		return sumOfWaves;
+	}
+
+	public static List<Double> wow() {
+			
+		return null;
 	}
 	
 	

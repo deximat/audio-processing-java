@@ -3,6 +3,7 @@ package com.codlex.audio.enpointing;
 import java.util.List;
 
 import com.codlex.audio.file.WavFile;
+import com.codlex.audio.final_project.model.feature.MFCC;
 import com.codlex.audio.generator.Window;
 import com.codlex.audio.projekat.AudioConstants;
 import com.codlex.audio.projekat.DTW;
@@ -18,6 +19,8 @@ public class Word {
 	private int end;
 	private List<Window> windows;
 	private List<List<Double>> coeficients;
+	private List<List<Double>> mfccCoeficients;
+	
 	private String name;
 	
 	
@@ -41,12 +44,15 @@ public class Word {
 		this.end = end;
 		this.windows = windows;
 		this.coeficients = new LPC(AudioConstants.lpcCoeficients, windows).getCoeficients();
+		// this.mfccCoeficients = calculateMfcc();
 //		for (int i = 0; i < this.coeficients.size(); i++) {
 //			System.out.print(distance(this.coeficients.get(i)) + " ");
 //		}
 //		System.out.println();
 		this.name = name;
 	}
+
+
 
 	public static Word loadSingle(final String fileName) {
 		WavFile file = WavFile.load(fileName);

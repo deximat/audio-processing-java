@@ -14,18 +14,22 @@ public class ModelTest {
 		System.out.println("##############     Library   ###################");
 
 		System.out.println("- Dictionaries: ");
+		
 		if (model.getDictionaries().isEmpty()) {
 			System.out.println("No dictionaries defined.");
 		}
+		
 		for (DictionaryModel dictionary : model.getDictionaries()) {
 			System.out.println(dictionary);
 		}
 		System.out.println("");
 		
 		System.out.println("- Test suites: ");
+		
 		if (model.getDictionaries().isEmpty()) {
 			System.out.println("No test suites defined.");
 		}
+		
 		for (TestModel test : model.getTests()) {
 			System.out.println(test);
 		}

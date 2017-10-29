@@ -22,9 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ScatterChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -133,7 +130,7 @@ public class Domaci1 extends Application {
 		this.sonogramStart = 0;
 		this.sonogramEnd = this.model.getDuration();
 		this.frequencyStart = 0;
-		this.frequencyEnd = (int) Math.round(this.model.getMaxFrequency());
+		this.frequencyEnd = this.model.getFrequencyCount();
 		System.out.println("fe: " + this.frequencyEnd);
 		this.windowFunctionSelected = 0;
 	}
@@ -205,6 +202,7 @@ public class Domaci1 extends Application {
 
 	private int sonogramStart;
 	private int sonogramEnd;
+	
 	private int frequencyStart;
 	private int frequencyEnd;
 
@@ -297,7 +295,7 @@ public class Domaci1 extends Application {
 			if (this.frequencyStart - size < 0 || this.frequencyEnd - size < 0) {
 				System.out.println("tried to move to left but can't go anymore");
 				this.frequencyStart = 0;
-				this.frequencyEnd = Math.min(size, this.model.getDuration());
+				this.frequencyEnd = Math.min(size, this.model.getFrequencyCount());
 				redrawEverything();
 				return;
 			}
@@ -323,14 +321,14 @@ public class Domaci1 extends Application {
 		zoomOut.addEventHandler(MouseEvent.MOUSE_CLICKED, (event) -> {
 			int size = this.frequencyEnd - this.frequencyStart;
 			int newSize = size * 2;
-			if (this.frequencyEnd + newSize >= this.model.getDuration()) {
-				this.frequencyEnd = this.model.getDuration();
+			if (this.frequencyEnd + newSize >= this.model.getFrequencyCount()) {
+				this.frequencyEnd = this.model.getFrequencyCount();
 				this.frequencyStart = Math.max(0, this.frequencyEnd - newSize);
 				redrawEverything();
 				return;
 			}
 
-			this.frequencyEnd = this.frequencyStart + Math.min(this.model.getDuration(), newSize);
+			this.frequencyEnd = Math.min(this.model.getFrequencyCount(), this.frequencyStart + newSize);
 			redrawEverything();
 		});
 		hbox.getChildren().add(zoomOut);
@@ -338,11 +336,11 @@ public class Domaci1 extends Application {
 		Button moveRight = new Button(">");
 		moveRight.addEventHandler(MouseEvent.MOUSE_CLICKED, (event) -> {
 			int size = this.frequencyEnd - this.frequencyStart;
-			if (this.frequencyStart + size > this.model.getDuration()
-					|| this.frequencyEnd + size > this.model.getDuration()) {
+			if (this.frequencyStart + size >= this.model.getFrequencyCount()
+					|| this.frequencyEnd + size >= this.model.getFrequencyCount()) {
 				System.out.println("tried to move to right but can't go anymore");
-				this.frequencyStart = Math.max(0, this.model.getDuration() - size);
-				this.frequencyEnd = this.model.getDuration();
+				this.frequencyStart = Math.max(0, this.model.getFrequencyCount() - size);
+				this.frequencyEnd = this.model.getFrequencyCount();
 				redrawEverything();
 
 				return;
@@ -402,20 +400,6 @@ public class Domaci1 extends Application {
 			}
 		}
 
-		// draw guides
-		// int lastGuide = 5;
-		// for (int i = 0; i < lastGuide; i++) {
-		// float percent = (float) i / lastGuide;
-		// int y = height - (int) (percent * height);
-		//
-		// for (int x = 0; x < width; x++) {
-		// gc.getPixelWriter().setColor(x, y, Color.WHITE);
-		// }
-		// gc.setStroke(Color.BLACK);
-		// gc.fillText("" + i * 1000, width + 10, y);
-		//
-		// }
-
 		int numberOfVPodeoka = 5;
 		int maxFreq = 22050;
 		for (int i = 1; i <= numberOfVPodeoka; i++) {
@@ -450,61 +434,6 @@ public class Domaci1 extends Application {
 
 		return canvas;
 
-	}
-
-	private Canvas createCanvasGrid(int width, int height, boolean sharp) {
-
-		Canvas canvas = new Canvas(width, height);
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				int brighteness = i;
-				gc.getPixelWriter().setColor(i, j, Color.rgb(brighteness, brighteness, brighteness));
-			}
-		}
-
-		return canvas;
-	}
-
-	private Node Chart() {
-
-		final NumberAxis xAxis = new NumberAxis(0, 100, 1);
-		final NumberAxis yAxis = new NumberAxis(0, 100, 1);
-		final ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
-		xAxis.setLabel("Age (years)");
-		yAxis.setLabel("Returns to date");
-		sc.setTitle("Investment Overview");
-
-		XYChart.Series series1 = new XYChart.Series();
-		series1.setName("Equities");
-
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 100; j++) {
-				series1.getData().add(Data(i, j, i));
-			}
-		}
-		sc.getData().addAll(series1);
-		return sc;
-	}
-
-	private XYChart.Data Data(double x, double y, int value) {
-		XYChart.Data data = new XYChart.Data(x, y);
-		data.setNode(point(value));
-		return data;
-	}
-
-	private Node point(int color) {
-		int size = 2;
-		Canvas canvas = new Canvas(size, size);
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				gc.getPixelWriter().setColor(i, j, Color.rgb(color, color, color));
-				// System.out.println("drawing" + i + " " + j);
-			}
-		}
-		return canvas;
 	}
 
 }

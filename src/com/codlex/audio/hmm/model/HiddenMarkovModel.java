@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import com.codlex.audio.hmm.HMM;
 import com.codlex.audio.hmm.Sequence;
 import com.codlex.audio.hmm.SimilarVectorsGenerator;
 

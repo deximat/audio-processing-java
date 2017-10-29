@@ -36,12 +36,14 @@ public class Model {
 	private List<Word> words = new ArrayList<>();
 	@Getter
 	private Word activeWord;
+	private int frequencyCount = -1;
 
 	public Model() {
 	}
 	
 
 	public void init(WavFile file) {
+		this.frequencyCount = -1;
 		this.signal = file.getSamples(0);
 		this.sampleDuration = 1 / file.getSamplingRate();
 		this.activeWindow = 0;
@@ -178,8 +180,13 @@ public class Model {
 	public int getDuration() {
 		return (int) (getSampleDuration() * getSignal().size() * 1000);
 	}
-	
-	public double getMaxFrequency() {
-		return calculateFrequencyDomain().stream().mapToDouble(Frequency::getFrequency).max().getAsDouble();
+
+
+	public int getFrequencyCount() {
+		if (frequencyCount == -1) {
+			this.frequencyCount = (int) calculateFrequencyDomain().stream().count();
+		} 
+		return this.frequencyCount;
 	}
+	
 }

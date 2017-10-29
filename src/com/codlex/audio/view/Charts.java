@@ -105,9 +105,11 @@ public class Charts {
 		System.out.println("size : " + signal.size());
 
 		double maxAmplitude = signal.stream().mapToDouble(Frequency::getAmplitude).max().getAsDouble();
-		for (Frequency sample : signal) {
-			boolean isInZoomRange = frequencyStart <= sample.getFrequency() && sample.getFrequency() <= frequencyEnd;
-			if (sample.getFrequency() < 0.0001 || !isInZoomRange) {
+		int index = 0;
+		for (int i = frequencyStart; i < frequencyEnd; i++) {
+			Frequency sample = signal.get(i);
+			
+			if (sample.getFrequency() < 0.0001) {
 				continue;
 			}
 

@@ -116,7 +116,6 @@ public class Charts {
 			if (sample.getAmplitude() > amplitudeFilter) {
 				int normalizedAmplitude = (int) Math.min(Math.round((sample.getAmplitude() / maxAmplitude) * 100), 100);
 				series.getData().add(new XYChart.Data(Math.round(sample.getFrequency()) + " Hz", normalizedAmplitude));
-				System.out.println("blabla");
 			}
 		}
 		

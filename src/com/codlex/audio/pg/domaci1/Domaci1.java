@@ -73,6 +73,18 @@ public class Domaci1 extends Application {
 		containerChildren.add(createButton("Process", () -> {
 			redrawEverything();
 		}));
+		
+		Button openWav = new Button("Open file");
+		openWav.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+			WavFile file = openWavFile(this.stage);
+			if (file != null) {
+				this.model.init(file);
+				onModelInitialized();
+			}
+			redrawEverything();
+		});
+		containerChildren.add(openWav);
+
 
 		return container;
 	}
@@ -91,7 +103,7 @@ public class Domaci1 extends Application {
 	}
 
 	private Node buildWindowChooser() {
-		List<Integer> numbersSet = IntStream.rangeClosed(0, this.model.calculateNumberOfWindows()).boxed()
+		List<Integer> numbersSet = IntStream.rangeClosed(0, this.model.calculateNumberOfWindows() - 1).boxed()
 				.collect(Collectors.toList());
 		ChoiceBox<Integer> windowNumbers = new ChoiceBox<>(FXCollections.observableArrayList(numbersSet));
 		windowNumbers.getSelectionModel().select(this.model.getActiveWindow());
@@ -116,7 +128,7 @@ public class Domaci1 extends Application {
 	@Override
 	public void start(final Stage stage) throws Exception {
 		this.model = new Model();
-		this.model.init(WavFile.load("t1-7.wav"));
+		this.model.init(WavFile.load("d1-tests/5-generated-cat.wav"));
 		onModelInitialized();
 
 		this.stage = stage;
@@ -161,42 +173,38 @@ public class Domaci1 extends Application {
 		VBox box = new VBox();
 		javafx.scene.chart.Chart chart = Charts.barFrequency(this.model.calculateFrequencyDomain(),
 				this.model.getAmplitudeFilter(), this.frequencyStart, this.frequencyEnd);
-		box.getChildren().add(chart);
 		box.getChildren().add(buildFrequencyControls(chart));
+		box.getChildren().add(chart);
 		return box;
 	}
 
 	private void redrawEverything() {
 		VBox vbox = new VBox(10);
 		List<Node> vboxChildren = vbox.getChildren();
-		Button openWav = new Button("Open file");
-		openWav.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-			WavFile file = openWavFile(this.stage);
-			if (file != null) {
-				this.model.init(file);
-				onModelInitialized();
-			}
-			redrawEverything();
-		});
-
+		vboxChildren.add(buildCharts());
 		vboxChildren.add(buildProcessingControls());
-		vboxChildren.add(openWav);
-		vboxChildren.add(buildSonogram());
-		vboxChildren.add(buildFrequencyChart());
 		vbox.setAlignment(Pos.CENTER);
-		Scene scene = new Scene(vbox, 1024, 768);
+		Scene scene = new Scene(vbox, 1100, 500);
 		this.stage.setScene(scene);
+	}
+
+	private Node buildCharts() {
+		HBox hbox = new HBox();
+		hbox.getChildren().add(buildSonogram());
+		hbox.getChildren().add(buildFrequencyChart());
+		return hbox;
 	}
 
 	private Node buildSonogram() {
 		VBox vbox = new VBox();
+
 		List<List<Frequency>> signal = this.model.calculateFullFrequencyDomain().subList(
 				this.sonogramStart / this.model.getWindowSizeMs(),
 				Math.max(1, this.sonogramEnd / this.model.getWindowSizeMs()));
 		System.out.println("ss: " + this.sonogramStart + " se: " + this.sonogramEnd);
 		Canvas sonogram = createGrid(signal, this.sonogramStart, this.sonogramEnd);
-		vbox.getChildren().add(sonogram);
 		vbox.getChildren().add(buildSonogramControls(sonogram));
+		vbox.getChildren().add(sonogram);
 		return vbox;
 	}
 
@@ -275,12 +283,13 @@ public class Domaci1 extends Application {
 		hbox.getChildren().add(moveRight);
 
 		hbox.getChildren().add(buildExportToPdf(sonogram));
-
+		
+		hbox.setAlignment(Pos.CENTER);
 		return hbox;
 	}
 
 	private Node buildExportToPdf(Node node) {
-		return createButton("Export to PDF", () -> {
+		return createButton("TO PDF", () -> {
 			WritableImage image = node.snapshot(new SnapshotParameters(), null);
 			PDF.exportImageToPdf(PDF.fileChooser(this.stage), SwingFXUtils.fromFXImage(image, null));
 		});
@@ -354,7 +363,7 @@ public class Domaci1 extends Application {
 		hbox.getChildren().add(moveRight);
 
 		hbox.getChildren().add(buildExportToPdf(chart));
-
+		hbox.setAlignment(Pos.CENTER);
 		return hbox;
 	}
 

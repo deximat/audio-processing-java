@@ -369,9 +369,9 @@ public class Domaci1 extends Application {
 	}
 
 	private Canvas createGrid(List<List<Frequency>> data, int beginScale, int endScale) {
-		double maxAmplitude = 0.1;
-		double maxFrequency = data.stream()
-				.mapToDouble(d -> d.stream().mapToDouble(x -> x.getFrequency()).max().getAsDouble()).max()
+		// double maxAmplitude = 0.1;
+		double maxAmplitude = data.stream()
+				.mapToDouble(d -> d.stream().mapToDouble(x -> x.getAmplitude()).max().getAsDouble()).max()
 				.getAsDouble();
 
 		// System.out.println("maxFrequ:" + maxFrequency);
@@ -407,8 +407,8 @@ public class Domaci1 extends Application {
 			int y = Math.round(percent * height);
 
 			int scaleSize = 10;
-			for (int j = 0; j < scaleSize; j++) {
-				gc.getPixelWriter().setColor(width + j, y, Color.BLACK);
+			for (int j = 0; j < width + scaleSize; j++) {
+				gc.getPixelWriter().setColor(j, y, Color.BLACK);
 			}
 
 			int value = Math.round((1 - percent) * maxFreq);
@@ -430,6 +430,14 @@ public class Domaci1 extends Application {
 			gc.setStroke(Color.BLACK);
 			gc.setTextAlign(TextAlignment.CENTER);
 			gc.fillText("" + value, x, height + scaleSize * 2);
+		}
+		
+		// TODO: fix for zoom
+		for (int i = 0; i < 10; i++) {
+			double percent = (double) this.model.getActiveWindow() / this.model.calculateNumberOfWindows();
+			int x = (int) Math.round(width * percent);
+			System.out.println("x: " + x + "percent: " + percent);
+			gc.getPixelWriter().setColor(x, height + i, Color.RED);
 		}
 
 		return canvas;

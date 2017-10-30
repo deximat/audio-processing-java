@@ -31,6 +31,7 @@ public class Model {
 	
 	@Getter
 	private int activeWindow = 1;
+	
 	private double amplitudeFilter;
 	@Getter
 	private List<Word> words = new ArrayList<>();

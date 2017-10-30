@@ -441,12 +441,16 @@ public class Domaci1 extends Application {
 			gc.fillText("" + value, x, height + scaleSize * 2);
 		}
 		
-		// TODO: fix for zoom
-		for (int i = 0; i < 10; i++) {
-			double percent = (double) this.model.getActiveWindow() / this.model.calculateNumberOfWindows();
-			int x = (int) Math.round(width * percent);
-			System.out.println("x: " + x + "percent: " + percent);
-			gc.getPixelWriter().setColor(x, height + i, Color.RED);
+		int time = this.model.getActiveWindow() * this.model.getWindowSizeMs();
+		System.out.println("time: " + time);
+		if (this.sonogramStart <= time && time <= this.sonogramEnd) {
+			int normalizedTime = time - this.sonogramStart;
+			for (int i = 0; i < 10; i++) {
+				double percent = (double)  normalizedTime / (this.sonogramEnd - this.sonogramStart);
+				int x = (int) Math.round(width * percent);
+				System.out.println("x: " + x + "percent: " + percent);
+				gc.getPixelWriter().setColor(x, height + i, Color.RED);
+			}
 		}
 
 		return canvas;

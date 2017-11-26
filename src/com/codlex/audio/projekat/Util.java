@@ -54,6 +54,10 @@ public class Util {
 	public static class Euclid {
 		
 		public static double distance (List<Double> vector1, List<Double> vector2) {
+			if (vector1.size() != vector2.size()) {
+				throw new RuntimeException("Wrong sizes of vectors.");
+			}
+			
 			double distance = 0; 
 			for (int i = 0; i < vector1.size(); i++) {
 				double diff = vector1.get(i) - vector2.get(i);

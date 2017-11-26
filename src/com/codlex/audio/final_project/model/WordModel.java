@@ -77,7 +77,7 @@ public class WordModel {
 		}
 		
 		final File file = new File(this.location, name);
-		JavaSoundRecorder.recordSample(file.getAbsolutePath());
+		// JavaSoundRecorder.recordSample(file.getAbsolutePath());
 		addSample(file);
 	}
 

@@ -37,7 +37,7 @@ public class WordDetection {
 		this.silenceEnergy = calculateSilenceEnergy(signal, samplesToGet);
 		this.silenceZct = calculateZCT(signal, samplesToGet, samplesInWindow);
 		this.words = calculateWords(signal, sampleDuration, samplesInWindow, 20);
-		
+
 		for (Word word : words) {
 			System.out.println("word " + word.getSampleDuration() + " size: " + word.getWindows().size());
 		}
@@ -62,7 +62,6 @@ public class WordDetection {
 
 	private List<Word> calculateWords(List<Double> signal, double sampleDuration, int size, int epsilonWindows) {
 		List<Window> windows = Window.generate(signal, size);
-		System.out.println("initial windows : " + windows.size());
 		List<Boolean> enoughEnergy = new ArrayList<>();
 		for (int i = 0; i < windows.size(); i++) {
 
@@ -86,7 +85,7 @@ public class WordDetection {
 
 		int maxSilenceLengthSmooth = (int) (silenceDurationSmooth / sampleDuration);
 		int minNonSilenceLengthSmooth = (int) (nonSilenceSmoothDuration / sampleDuration);
-		
+
 		/// DEBUG
 		// System.out.println("Before smooth:");
 		// Util.printList(enoughEnergy);
@@ -99,12 +98,12 @@ public class WordDetection {
 		}
 
 		processZCRExtension(windows, enoughEnergy, (int) ((250 / 1000.0) / sampleDuration));
-		
-		// DEBUG
-//		System.out.println("After smooth:");
-//		Util.printList(enoughEnergy);
 
-		return makeWords(enoughEnergy, size, sampleDuration, windows);
+		// DEBUG
+		// System.out.println("After smooth:");
+		// Util.printList(enoughEnergy);
+
+		return makeWords(enoughEnergy, size, sampleDuration, windows, signal);
 	}
 
 	private int calculateSpeechLength(List<Boolean> enoughEnergy) {
@@ -151,7 +150,9 @@ public class WordDetection {
 	}
 
 	private List<Word> makeWords(List<Boolean> enoughEnergy, int windowSize, double sampleDuration,
-			List<Window> windows) {
+			List<Window> windows, final List<Double> signal) {
+		System.out.println("Making words....");
+		int wordCount = 0;
 		int i = 0;
 
 		while (i < enoughEnergy.size() && !enoughEnergy.get(i)) {
@@ -167,14 +168,20 @@ public class WordDetection {
 				i++;
 				// skip word samples
 			}
-
-			words.add(new Word(sampleDuration, wordStart * windowSize, i * windowSize, windows.subList(wordStart, i),
-					this.name));
+			int signalStart = wordStart * windowSize;
+			int signalEnd = i * windowSize;
+			words.add(new Word(sampleDuration, signalStart, signalEnd, windows.subList(wordStart, i),
+					signal.subList(signalStart, signalEnd), this.name + ":word-" + wordCount));
+			wordCount++;
 
 			while (i < enoughEnergy.size() && !enoughEnergy.get(i)) {
 				i++;
 				// silence
 			}
+		}
+
+		if (words.isEmpty()) {
+			System.out.println("Everything is silence");
 		}
 
 		return words;

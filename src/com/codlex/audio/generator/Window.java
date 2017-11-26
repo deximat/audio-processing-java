@@ -23,6 +23,17 @@ public class Window {
 		return transform.getFrequencies();
 	}
 	
+	public static List<Window> generateOverlapping(final List<Double> samples, int size, int shift) {
+		System.out.println("Generating LPC windows: " + samples.size() + " - " + size + " sh: " + shift);
+		final List<Window> windows = new ArrayList<>();
+		
+		for (int i = 0; i < samples.size() - size; i += shift) {
+			windows.add(new Window(samples.subList(i, i + size)));
+		}
+		
+		return windows;
+	}
+	
 	public static List<Window> generate(final List<Double> samples, int size) {
 		final List<Window> windows = new ArrayList<>();
 		

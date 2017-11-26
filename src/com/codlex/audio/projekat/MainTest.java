@@ -39,21 +39,23 @@ public class MainTest {
 	}
 
 	private static void recordAndFindInDictionary(String name) {
-		JavaSoundRecorder.recordSample(name);
-		Word word = mainDictionary.findWord(Word.loadSingle(name));
+		JavaSoundRecorder.recordSample(name, (file) -> {
+			Word word = mainDictionary.findWord(Word.loadSingle(name));
 
-		if (word == null) {
-			System.out.println("Word not found!");
-		} else {
-			System.out.println("Succesfully found word: " + word);
-		}
+			if (word == null) {
+				System.out.println("Word not found!");
+			} else {
+				System.out.println("Succesfully found word: " + word);
+			}
+		});
 	}
 
 	private static void recordAndAddToDictionary(String name) {
 		String filename = "mainDictionary/" + name;
-		JavaSoundRecorder.recordSample(filename);
-		mainDictionary.addWord(Word.loadSingle(filename));
-		System.out.println("Succesfully added to dictionary.");
+		JavaSoundRecorder.recordSample(filename, file -> {
+			mainDictionary.addWord(Word.loadSingle(filename));
+			System.out.println("Succesfully added to dictionary.");
+		});
 	}
 
 	private static void runAllTests() {

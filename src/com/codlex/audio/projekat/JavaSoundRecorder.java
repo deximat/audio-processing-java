@@ -3,7 +3,10 @@ package com.codlex.audio.projekat;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
+import java.util.function.Consumer;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -12,6 +15,15 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
+
+import javafx.animation.PauseTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Dialog;
+import javafx.util.Duration;
 
 /**
  * A sample program is to demonstrate how to record sound in Java
@@ -29,7 +41,7 @@ public class JavaSoundRecorder {
 	}
 	
 	// record duration, in milliseconds
-	static final long RECORD_TIME = 4000;	
+	static final long RECORD_TIME = 20000;	
 
 	// path of the wav file
 	File wavFile;
@@ -96,69 +108,34 @@ public class JavaSoundRecorder {
 		System.out.println("Finished");
 	}
 
-	/**
-	 * Entry to run the program
-	 * @throws InterruptedException 
-	 */
-	public static void main(String[] args) throws InterruptedException {
-		System.out.println("Welcome to sample maker!");
-		
-		System.out.println("How many samples will you create?");
-		Scanner scanner = new Scanner(System.in);
-		int samples = scanner.nextInt();
-//		System.out.println("Enter name of sample:");
-//		String name = scanner.next();
-		
-		
-		for (String word : AudioConstants.Test1.words) {
-			System.out.println("Recording " + word);
-			Thread.sleep(1000);
-			for (int i = 0; i < samples; i++) {
-				if (i == 0) {
-					recordSample("testData/recnik30Reci/negativni-testovi-govornik/" + word + i + "r.wav");
-				} else {
-					recordSample("testData/recnik30Reci/negativni-testovi-govornik/" + word+i+"r.wav");
-				}
-			}
-		}
-		
-		scanner.close();
-	}
-
-	public static File recordSample(String name) {		
+	
+	private final static ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+	
+	public static void recordSample(String name, Consumer<File> onFinish) {
 		final JavaSoundRecorder recorder = new JavaSoundRecorder(name);
-
-		final Semaphore semaphore = new Semaphore(0);
-		// creates a new thread that waits for a specified
-		// of time before stopping
-		Thread stopper = new Thread(new Runnable() {
-			public void run() {
-				try {
-					Thread.sleep(SILENCE_TIME);
-					System.out.println("Talk:");
-					Thread.sleep(RECORD_TIME - SILENCE_TIME);
-					System.out.println("Finished");
-				} catch (InterruptedException ex) {
-					ex.printStackTrace();
-				}
+				
+		final Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Recording...");
+		alert.setHeaderText("Recording will begin shortly, be quiet.");
+		alert.show();
+		
+		PauseTransition delay = new PauseTransition(Duration.millis(SILENCE_TIME));
+		delay.setOnFinished( event -> {
+			alert.setHeaderText("Talk!");
+			alert.setAlertType(AlertType.WARNING);
+			
+			PauseTransition delay2 = new PauseTransition(Duration.millis(RECORD_TIME));
+			delay2.setOnFinished( event2 -> {
+				alert.setHeaderText("Recording finished");
+				alert.setAlertType(AlertType.CONFIRMATION);
 				recorder.finish();
-				semaphore.release();
-			}
-		});
-		stopper.start();
-
-		// start recording
-		recorder.start();
+				onFinish.accept(recorder.wavFile);
+			});		
+			delay2.play();
+		});		
+		delay.play();
 		
-		try {
-			semaphore.acquire();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return recorder.wavFile;
-		
+		new Thread(() -> recorder.start()).start();
 	}
 	
 	

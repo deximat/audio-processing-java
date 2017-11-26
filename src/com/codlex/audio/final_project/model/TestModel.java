@@ -73,7 +73,7 @@ public class TestModel {
 	private static TestSampleModel newSample(final File location, String word, String description) {
 		final String name = makeName(word, description);
 		final File file = new File(location, name);
-		JavaSoundRecorder.recordSample(file.getAbsolutePath());
+		// JavaSoundRecorder.recordSample(file.getAbsolutePath());
 		return new TestSampleModel(file);
 	} 
 	

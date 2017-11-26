@@ -214,6 +214,7 @@ public class Domaci1 extends Application {
 	private int frequencyStart;
 	private int frequencyEnd;
 
+
 	private Node buildSonogramControls(final Node sonogram) {
 
 		HBox hbox = new HBox();
@@ -369,7 +370,6 @@ public class Domaci1 extends Application {
 
 	public static void main(final String[] args) {
 		launch(args);
-
 	}
 
 	private int map(int minValue, int maxValue, double percent) {

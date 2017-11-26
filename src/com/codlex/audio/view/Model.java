@@ -51,7 +51,7 @@ public class Model {
 		setWindowSize(10);
 		setAmplitudeFilter(0);
 		// TODO: be careful I put null for windows
-		Word wholeSingnal = new Word(this.sampleDuration, 0, this.signal.size(), new ArrayList<>(), null) {
+		Word wholeSingnal = new Word(this.sampleDuration, 0, this.signal.size(), new ArrayList<>(), this.signal, null) {
 			@Override
 			public String toString() {
 				return "Whole signal";

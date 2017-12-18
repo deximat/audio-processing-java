@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import com.codlex.audio.projekat.JavaSoundRecorder;
+import com.codlex.audio.pg.domaci3.JavaSoundRecorder;
 
 import lombok.Getter;
 

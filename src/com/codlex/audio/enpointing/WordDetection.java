@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.codlex.audio.file.WavFile;
 import com.codlex.audio.generator.Window;
-import com.codlex.audio.projekat.AudioConstants;
+import com.codlex.audio.pg.domaci3.AudioConstants;
 
 import lombok.Getter;
 

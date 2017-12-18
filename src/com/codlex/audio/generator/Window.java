@@ -3,6 +3,7 @@ package com.codlex.audio.generator;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codlex.audio.pg.domaci3.AudioConstants;
 import com.codlex.audio.transform.FastFourierTransform;
 import com.codlex.audio.transform.Frequency;
 
@@ -15,7 +16,7 @@ public class Window {
 	private final List<Double> samples;
 	
 	private Window(List<Double> samples) {
-		this.samples = samples;
+		this.samples = AudioConstants.windowFunction.apply(samples);
 	}
 	
 	public List<Frequency> doFFT() {

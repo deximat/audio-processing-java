@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.codlex.audio.enpointing.Word;
-import com.codlex.audio.projekat.AudioConstants;
-import com.codlex.audio.projekat.JavaSoundRecorder;
+import com.codlex.audio.pg.domaci3.AudioConstants;
+import com.codlex.audio.pg.domaci3.JavaSoundRecorder;
 import com.codlex.audio.windowing.WindowFunction;
 import com.google.common.collect.Lists;
 

@@ -5,10 +5,11 @@ import java.util.List;
 
 import com.codlex.audio.file.WavFile;
 import com.codlex.audio.generator.Window;
-import com.codlex.audio.projekat.AudioConstants;
-import com.codlex.audio.projekat.DTW;
-import com.codlex.audio.projekat.LPC;
-import com.codlex.audio.projekat.Util;
+import com.codlex.audio.pg.domaci3.AudioConstants;
+import com.codlex.audio.pg.domaci3.DTW;
+import com.codlex.audio.pg.domaci3.LPC;
+import com.codlex.audio.pg.domaci3.MFCC;
+import com.codlex.audio.pg.domaci3.Util;
 
 import lombok.Data;
 
@@ -57,7 +58,7 @@ public class Word {
 	}
 
 	public double distanceTo(final Word word) {
-		return new DTW(word.coeficients, this.coeficients).getDistance();
+		return new DTW(this.coeficients, word.coeficients).getDistance();
 	}
 
 	public Word(double sampleDuration, int start, int end, List<Window> windows, List<Double> signal, String name) {
@@ -66,8 +67,10 @@ public class Word {
 		this.end = end;
 		this.windows = windows;
 		this.signal = signal;
-		this.coeficients = new LPC(AudioConstants.lpcCoeficients, signal, sampleDuration).getCoeficients();
-		// this.mfccCoeficients = calculateMfcc();
+		// this.coeficients = new LPC(AudioConstants.lpcCoeficients, signal, sampleDuration).getCoeficients();
+		this.coeficients = calculateMFCC(48000);
+		
+		// this.mfccCoeficients;
 		// for (int i = 0; i < this.coeficients.size(); i++) {
 		// System.out.print(distance(this.coeficients.get(i)) + " ");
 		// }
@@ -78,7 +81,16 @@ public class Word {
 				+ this.windows.size() + "-" + this.signal.size());
 	}
 
+	private List<List<Double>> calculateMFCC(int samplingRate) {
+		List<List<Double>> coefficients = new ArrayList<>();
+		for (Window window : windows) {
+			coefficients.add(new MFCC(window.getSamples().size(), samplingRate, AudioConstants.mfccCoefficients).calculateCoefficients(window.getSamples()));
+		}
+		return coefficients;
+	}
+
 	public static Word loadSingle(final String fileName) {
+		System.out.println("name" + fileName); 
 		WavFile file = WavFile.load(fileName);
 		WordDetection wordDetection = new WordDetection(file, AudioConstants.windowDurationMs,
 				AudioConstants.silenceDurationMs, fileName);

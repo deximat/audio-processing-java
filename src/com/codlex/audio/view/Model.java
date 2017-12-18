@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.codlex.audio.enpointing.Word;
 import com.codlex.audio.enpointing.WordDetection;
 import com.codlex.audio.file.WavFile;
-import com.codlex.audio.projekat.AudioConstants;
+import com.codlex.audio.pg.domaci3.AudioConstants;
 import com.codlex.audio.transform.FastFourierTransform;
 import com.codlex.audio.transform.Frequency;
 import com.codlex.audio.windowing.WindowFunction;

@@ -1,0 +1,53 @@
+test 1
+ - konj
+ - sto
+ - jastuk 
+test 2
+ - mermer
+ - petao
+ - naocare
+test 3
+ - majica
+ - telefon
+ - soljica
+
+test 4 z 
+ - mis
+ - ruka
+ - djon
+
+test 4 m
+ - rusija
+ - noga
+ - papuca
+
+test 5 z
+ - tele
+ - dva 
+ - tri
+
+test 5 m
+ - kornjaca
+ - hleb
+ - pasteta
+ 
+ Baza:
+ - konj
+ - sto
+ - jastuk
+ - mermer
+ - petao
+ - naocare
+ - majica
+ - telefon
+ - soljica
+ - rusija
+ - noga
+ - papuca
+ - kornjaca
+ - hleb 
+ - pasteta
+ 
+ 
+
+ 

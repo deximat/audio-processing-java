@@ -2,6 +2,9 @@ package com.codlex.audio.hmm.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import com.google.common.collect.ImmutableList;
 
 public class Vectors {
 	
@@ -54,6 +57,31 @@ public class Vectors {
 			distance += Math.sqrt(Math.pow(vector1.get(i) - vector2.get(i), 2));
 		}
 		return distance;
+	}
+
+	public static List<List<Double>> generateMatrixWithVectors(int vectorSize,
+			ImmutableList<Integer> onesAt) {
+		
+		List<List<Double>> vectors = new ArrayList<>();
+		
+		for (int i = 0; i < onesAt.size(); i++) {
+			int vectorNumber = onesAt.get(i);		
+			vectors.add(Vectors.getVector(vectorSize, vectorNumber));
+		}
+		
+		return vectors;
+	}
+	
+	
+	public static List<Double> getVector(int size, int vectorNumber) {
+		Random random = new Random(vectorNumber);
+		List<Double> vector = new ArrayList<>();
+		
+		for (int i = 0; i < size; i++) {
+			vector.add(random.nextDouble());
+		}
+		
+		return vector;
 	}
 	
 }

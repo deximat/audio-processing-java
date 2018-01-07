@@ -14,12 +14,13 @@ public class Dictionary {
 		double bestDistance = AudioConstants.dtwTreshold;
 		
 		for (Word dictionaryWord : this.words) {
-			System.out.println("Checking with " + dictionaryWord);
+			// System.out.println("Checking with " + dictionaryWord);
 			double distance = word.distanceTo(dictionaryWord);
+			
 //			if (distance == 0) {
 //				return null;
 //			}
-			// System.out.println(word + " is distanced from " + dictionaryWord + " : " + distance);
+			// System.out.println(dictionaryWord + " dtw distance: " + distance);
 			if (distance < bestDistance 
 					//&& distance != 0
 					) {
@@ -29,7 +30,7 @@ public class Dictionary {
 		}
 
 		if (bestMatch != null) {
-			System.out.println("DST: " + bestDistance);
+			// System.out.println("DST: " + bestDistance);
 			// System.out.println("######## Best match: " + word + " is " + bestMatch + " with score: " + bestDistance);
 		}
 		

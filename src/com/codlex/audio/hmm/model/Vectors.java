@@ -54,9 +54,9 @@ public class Vectors {
 	public static double distance(final List<Double> vector1, final List<Double> vector2) {
 		double distance = 0;
 		for (int i = 0; i < vector1.size(); i++) {
-			distance += Math.sqrt(Math.pow(vector1.get(i) - vector2.get(i), 2));
+			distance += Math.pow(vector1.get(i) - vector2.get(i), 2);
 		}
-		return distance;
+		return Math.sqrt(distance);
 	}
 
 	public static List<List<Double>> generateMatrixWithVectors(int vectorSize,
@@ -66,14 +66,14 @@ public class Vectors {
 		
 		for (int i = 0; i < onesAt.size(); i++) {
 			int vectorNumber = onesAt.get(i);		
-			vectors.add(Vectors.getVector(vectorSize, vectorNumber));
+			vectors.add(Vectors.getRandomVector(vectorSize, vectorNumber));
 		}
 		
 		return vectors;
 	}
 	
 	
-	public static List<Double> getVector(int size, int vectorNumber) {
+	public static List<Double> getRandomVector(int size, int vectorNumber) {
 		Random random = new Random(vectorNumber);
 		List<Double> vector = new ArrayList<>();
 		

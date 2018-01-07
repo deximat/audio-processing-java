@@ -21,7 +21,6 @@ public class Word {
 	private int end;
 	private List<Window> windows;
 	private List<List<Double>> coeficients;
-	private List<List<Double>> mfccCoeficients;
 	private int vectorToAnalyzeStart;
 
 	private String name;
@@ -77,8 +76,8 @@ public class Word {
 		// System.out.println();
 		this.name = name + "(" + (start * sampleDuration) + ", " + (end * sampleDuration) + ")";
 
-		System.out.println("Word - " + this.start + " - " + this.end + " - " + sampleDuration + " w: "
-				+ this.windows.size() + "-" + this.signal.size());
+//		System.out.println("Word - " + this.start + " - " + this.end + " - " + sampleDuration + " w: "
+//				+ this.windows.size() + "-" + this.signal.size());
 	}
 
 	private List<List<Double>> calculateMFCC(int samplingRate) {
@@ -90,7 +89,7 @@ public class Word {
 	}
 
 	public static Word loadSingle(final String fileName) {
-		System.out.println("name" + fileName); 
+		System.out.println("Loading " + fileName + "..."); 
 		WavFile file = WavFile.load(fileName);
 		WordDetection wordDetection = new WordDetection(file, AudioConstants.windowDurationMs,
 				AudioConstants.silenceDurationMs, fileName);

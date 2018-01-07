@@ -37,10 +37,10 @@ public class WordDetection {
 		this.silenceEnergy = calculateSilenceEnergy(signal, samplesToGet);
 		this.silenceZct = calculateZCT(signal, samplesToGet, samplesInWindow);
 		this.words = calculateWords(signal, sampleDuration, samplesInWindow, 20);
-
-		for (Word word : words) {
-			System.out.println("word " + word.getSampleDuration() + " size: " + word.getWindows().size());
-		}
+//
+//		for (Word word : words) {
+//			System.out.println("word " + word.getSampleDuration() + " size: " + word.getWindows().size());
+//		}
 	}
 
 	private double calculateZCT(final List<Double> signal, int samplesToGet, final int windowSize) {
@@ -151,7 +151,7 @@ public class WordDetection {
 
 	private List<Word> makeWords(List<Boolean> enoughEnergy, int windowSize, double sampleDuration,
 			List<Window> windows, final List<Double> signal) {
-		System.out.println("Making words....");
+		
 		int wordCount = 0;
 		int i = 0;
 

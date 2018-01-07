@@ -3,6 +3,8 @@ package com.codlex.audio.hmm;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codlex.audio.enpointing.Word;
+
 import javafx.fxml.FXML;
 
 public class Sequence {
@@ -12,6 +14,12 @@ public class Sequence {
 	
 	@FXML
 	private String name;
+	
+	public Sequence(String name, Word word) {
+		this.name = name;
+		this.vectors = word.getCoeficients();
+		
+	}
 	
 	public Sequence(String name, int vectorSize) {
 		this.name = name;
@@ -55,7 +63,6 @@ public class Sequence {
 	}
 	
 	public String getName() {
-		System.out.println("name : " + this.name);
 		return this.name;
 	}
 	

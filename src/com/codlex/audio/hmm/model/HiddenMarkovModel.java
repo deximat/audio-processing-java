@@ -3,23 +3,19 @@ package com.codlex.audio.hmm.model;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.codlex.audio.enpointing.Word;
 import com.codlex.audio.hmm.Sequence;
-import com.codlex.audio.pg.domaci3.Dictionary;
 import com.google.common.io.Files;
 
 public class HiddenMarkovModel {
 
+	
 	public class FindResults {
 		private final CostAndState[][] results;
+		
 		private final CostAndState cost;
 
 		public FindResults(final CostAndState[][] results) {
@@ -48,6 +44,10 @@ public class HiddenMarkovModel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		
+		public CostAndState cost() {
+			return this.cost;
 		}
 	}
 	
@@ -201,7 +201,6 @@ public class HiddenMarkovModel {
 			}
 			System.out.println();
 		}
-		
 	}
 
 	private double countInStateAndStaying(final int id, List<Sequence> sequences) {
@@ -220,80 +219,5 @@ public class HiddenMarkovModel {
 		
 		return count;
 	}
-	
-	public static void main(String[] args) {
-		Dictionary dict = new Dictionary();
-		
-		final Map<String, HiddenMarkovModel> dictionary = new HashMap<>();
-		final File[] files = new File("d4-tests/recnik/").listFiles();
-		for (File file : files) {
-	
-			String name = file.getName();
-			if (name.startsWith(".")) {
-				continue;
-			}
-			final List<Sequence> sequences = new ArrayList<>();
-			final File location = new File("d4-tests/recnik/" + name);
-			for (final File sample : location.listFiles()) {
-				final Word word = Word.loadSingle(sample.getAbsolutePath());
-				dict.addWord(word); // TODO: REMOVE
-				sequences.add(new Sequence(name, word));
-			}
-			
-			HiddenMarkovModel model = new HiddenMarkovModel(10);
-			model.train(sequences);
-			dictionary.put(name, model);	
-		}
-		
-		
-		int testsRun = 0;
-		int testsCorrect = 0;
-		int dtwTestsCorrect = 0;
-		File testLocation = new File("d4-tests/tests");
-		for (final File sample : testLocation.listFiles()) {
-			
-//			if (!sample.getName().contains("jedan-z2")) {
-//				continue;
-//			}
-			
-			testsRun++;
-			double bestScore = Double.MAX_VALUE;
-			String bestWord = "NO_WORD";
-			
-			final Word word = Word.loadSingle(sample.getAbsolutePath());
-			for (Entry<String, HiddenMarkovModel> entry : dictionary.entrySet()) {
-				FindResults result = entry.getValue().find(new Sequence(sample.getName(), word));
-				result.print(entry.getKey(), sample.getName());
-				
-				double score = result.cost.getCost();
-				if (score < bestScore) {
-					bestScore = score;
-					bestWord = entry.getKey();
-				}
-				
-				System.out.println(entry.getKey() + " cost: " + score);
-			}
-			
-			Word dtw = dict.findWord(word);
-			if (word.getName().contains(getSimpleName(dtw.getName()))) {
-				dtwTestsCorrect++;
-			}
-			
-			if (word.getName().contains(bestWord)) {
-				testsCorrect++;
-			}
-			
-			System.out.println("Found best word for " + word + " is: " + bestWord + " with score: " + bestScore);
-			System.out.println("Word found by dtw: " + dtw);
-		}
-		
-		System.out.println("Test results: HMM(" + testsCorrect + "/"+ testsRun + "), DTW(" + dtwTestsCorrect +  "/" + testsRun +")" );
-		
-	}
-	
-	private static String getSimpleName(final String name) {
-		String[] directories = name.split("/");
-		String wordName = directories[directories.length - 2];
-		return wordName;
-	}
+
 }

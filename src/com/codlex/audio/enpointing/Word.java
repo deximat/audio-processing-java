@@ -110,4 +110,9 @@ public class Word {
 	public void recalculateLPC() {
 		this.coeficients = new LPC(AudioConstants.lpcCoeficients, this.signal, this.sampleDuration).getCoeficients();
 	}
+	
+	public String getSimpleName() {
+		String[] names =  this.name.split("/");
+		return names[names.length - 1];
+	}
 }

@@ -31,7 +31,6 @@ public class Domaci4 {
 			System.out.println("[4] Add folder with wav files as new word");
 			System.out.println("[5] Find wav file in dictionary");
 
-			System.out.println("To add wave file to dictionary, just paste into dictionary folder.");
 
 			switch (in.nextInt()) {
 			case 1:
@@ -43,15 +42,27 @@ public class Domaci4 {
 			 case 3:
 				 recordAndFindInDictionary(dict);
 				 break;
+			 case 4:
+				 System.out.println("Enter apsolute path to word directory.");
+				 addWordToDictionary(dict, in.next());
+				 break;
+			 case 5:
+				 System.out.println("Enter absolute path to wav file of word.");
+				 findWordInDictionary(dict, in.next());
+				 break;
 			}
 		}
 
 	}
 
-	private static String getSimpleName(final String name) {
-		String[] directories = name.split("/");
-		String wordName = directories[directories.length - 2];
-		return wordName;
+	private static void findWordInDictionary(HMMDictionary dictionary, String wavFile) {
+		String name = dictionary.findWord(Word.loadSingle(wavFile));
+		System.out.println("Succesfully found word: " + name);
+	}
+
+	private static void addWordToDictionary(HMMDictionary dictionary, String wordDirectory) {
+		dictionary.addWord(new File(wordDirectory));
+		System.out.println("Succesfully added word to dictionary.");
 	}
 
 	private static void runAllTests() {

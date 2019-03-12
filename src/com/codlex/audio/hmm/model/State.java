@@ -43,9 +43,9 @@ public class State {
 
 		return 1 / bestDistance;
 
-		// GAUS:
-		// double density = this.distribution.density(Vectors.toArray(vector));
-		// return density;
+//		// GAUS:
+//		 double density = this.distribution.density(Vectors.toArray(vector));
+//		 return density;
 	}
 
 	public List<Double> getMeanVector() {
